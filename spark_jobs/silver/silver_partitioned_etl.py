@@ -10,9 +10,7 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 # Read bronze/raw data
-df = spark.read.parquet(
-    "data/raw/nyc_taxi/*.parquet"
-)
+df = spark.read.parquet("/opt/airflow/data/raw/nyc_taxi/")
 
 print("\n=== Raw Schema ===")
 df.printSchema()
@@ -46,7 +44,7 @@ final_df.show(5)
 final_df.write \
     .mode("overwrite") \
     .partitionBy("trip_date") \
-    .parquet("data/processed/nyc_taxi/")
+    .parquet("/opt/airflow/data/processed/nyc_taxi/")
 
 print("\n✅ Silver Layer ETL Completed")
 

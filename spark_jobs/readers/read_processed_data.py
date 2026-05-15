@@ -4,7 +4,7 @@ spark = SparkSession.builder \
     .appName("View Processed Data") \
     .getOrCreate()
 
-df = spark.read.parquet("data/processed/nyc_taxi/")
+df = spark.read.parquet("data/curated/nyc_taxi_gold/")
 
 print("\n=== Schema ===")
 df.printSchema()

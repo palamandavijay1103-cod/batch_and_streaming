@@ -10,7 +10,9 @@ services:
       - postgres-db-volume:/var/lib/postgresql/data
 
   airflow-webserver:
-    image: apache/airflow:2.9.1
+    build:
+      context: .
+      dockerfile: testing.dockerfile
     depends_on:
       - postgres
     environment:
@@ -22,13 +24,15 @@ services:
       - ./airflow/dags:/opt/airflow/dags
       - ./spark_jobs:/opt/airflow/spark_jobs
       - ./requirements.txt:/requirements.txt
+      - ./data:/opt/airflow/data
     ports:
       - "8080:8080"
-    command: >
-      bash -c "python -m pip install -r /requirements.txt && airflow webserver"
+    command: webserver
 
   airflow-scheduler:
-    image: apache/airflow:2.9.1
+    build:
+      context: .
+      dockerfile: testing.dockerfile
     depends_on:
       - postgres
     environment:
@@ -40,8 +44,9 @@ services:
       - ./airflow/dags:/opt/airflow/dags
       - ./spark_jobs:/opt/airflow/spark_jobs
       - ./requirements.txt:/requirements.txt
-    command: >
-      bash -c "python -m pip install -r /requirements.txt && airflow scheduler"
+      - ./data:/opt/airflow/data
+    command: scheduler
+      
 
 volumes:
   postgres-db-volume:

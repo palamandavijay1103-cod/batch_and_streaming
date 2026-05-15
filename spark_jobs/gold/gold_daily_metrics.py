@@ -13,13 +13,8 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 # Read silver/processed data
-df = spark.read.parquet("data/processed/nyc_taxi/")
+df = spark.read.parquet("/opt/airflow/data/processed/nyc_taxi/")
 
-# Create trip_date column
-df = df.withColumn(
-    "trip_date",
-    to_date(col("tpep_pickup_datetime"))
-)
 
 # Gold layer aggregations
 gold_df = df.groupBy("trip_date").agg(
@@ -35,7 +30,7 @@ gold_df.show(20, truncate=False)
 
 # Write gold layer data
 gold_df.write.mode("overwrite") \
-    .parquet("data/curated/nyc_taxi_gold/")
+    .parquet("/opt/airflow/data/curated/nyc_taxi_gold/")
 
 print("\n✅ Gold Layer Created Successfully")
 
