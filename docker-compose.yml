@@ -1,4 +1,3 @@
-version: '3'
 
 services:
   postgres:
@@ -18,12 +17,15 @@ services:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__WEBSERVER__SECRET_KEY: my_fixed_airflow_key
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./spark_jobs:/opt/airflow/spark_jobs
+      - ./requirements.txt:/requirements.txt
     ports:
       - "8080:8080"
-    command: webserver
+    command: >
+      bash -c "python -m pip install -r /requirements.txt && airflow webserver"
 
   airflow-scheduler:
     image: apache/airflow:2.9.1
@@ -33,10 +35,13 @@ services:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
       AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__WEBSERVER__SECRET_KEY: my_fixed_airflow_key
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./spark_jobs:/opt/airflow/spark_jobs
-    command: scheduler
+      - ./requirements.txt:/requirements.txt
+    command: >
+      bash -c "python -m pip install -r /requirements.txt && airflow scheduler"
 
 volumes:
   postgres-db-volume:
